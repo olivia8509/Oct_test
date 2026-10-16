@@ -1,0 +1,322 @@
+<!DOCTYPE html>
+<html lang="ko">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>서귀포시 기초생활보장 인포그래픽 대시보드</title>
+<style>
+:root{
+  --bg:#f7f4ed;--paper:#fcfbf8;--ink:#1c1c1c;--muted:#66645f;--line:#e6e2d9;
+  --green:#426b59;--green2:#789b88;--orange:#c9784a;--orange2:#e5b08f;
+  --blue:#5b7894;--blue2:#aabcca;--pale-green:#e7eee9;--pale-orange:#f3e8df;
+  --pale-blue:#e6edf2;--shadow:0 16px 38px rgba(43,39,32,.08);
+}
+*{box-sizing:border-box}
+html{scroll-behavior:smooth}
+body{
+  margin:0;background:var(--bg);color:var(--ink);
+  font-family:"Malgun Gothic","맑은 고딕","Apple SD Gothic Neo","Noto Sans KR",sans-serif;
+  line-height:1.55;word-break:keep-all;
+}
+button{font:inherit}
+.shell{max-width:1440px;margin:auto;padding:0 32px 72px}
+.topbar{
+  position:sticky;top:0;z-index:20;display:flex;justify-content:space-between;align-items:center;
+  padding:15px 32px;background:rgba(247,244,237,.92);backdrop-filter:blur(14px);
+  border-bottom:1px solid rgba(230,226,217,.9)
+}
+.brand{display:flex;align-items:center;gap:12px;font-weight:800;letter-spacing:-.04em}
+.brand-mark{width:34px;height:34px;border-radius:50%;background:var(--green);position:relative}
+.brand-mark:after{content:"";position:absolute;width:13px;height:13px;border-radius:50%;right:-3px;bottom:1px;background:var(--orange)}
+.nav{display:flex;gap:8px;flex-wrap:wrap}
+.nav a{color:var(--muted);text-decoration:none;font-size:13px;font-weight:700;padding:8px 11px;border-radius:20px}
+.nav a:hover{background:var(--paper);color:var(--green)}
+.hero{
+  min-height:430px;margin:28px 0 24px;padding:54px 56px;position:relative;overflow:hidden;
+  border:1px solid var(--line);border-radius:28px;background:var(--paper);box-shadow:var(--shadow);
+  display:grid;grid-template-columns:1.35fr .65fr;gap:42px;align-items:center
+}
+.hero:before{content:"";position:absolute;width:390px;height:390px;border-radius:50%;right:-120px;top:-155px;background:var(--pale-green)}
+.hero:after{content:"";position:absolute;width:165px;height:165px;border-radius:50%;right:100px;top:76px;background:var(--pale-orange)}
+.eyebrow{display:inline-flex;padding:7px 12px;border-radius:30px;background:var(--pale-green);color:var(--green);font-size:12px;font-weight:900;letter-spacing:.08em}
+h1{font-size:clamp(35px,4vw,61px);letter-spacing:-.055em;line-height:1.12;margin:22px 0 19px}
+.hero p{color:var(--muted);font-size:18px;max-width:740px}
+.hero-meta{display:flex;gap:10px;flex-wrap:wrap;margin-top:28px}
+.chip{font-size:12px;font-weight:800;border:1px solid var(--line);background:#fff;padding:8px 11px;border-radius:18px}
+.hero-panel{position:relative;z-index:2;background:var(--ink);color:#fff;border-radius:22px;padding:30px}
+.hero-panel small{color:var(--orange2);font-weight:900;letter-spacing:.12em}
+.hero-panel h2{font-size:27px;line-height:1.3;margin:14px 0 22px}
+.hero-panel ol{padding-left:20px;margin:0;color:#dedbd4}
+.section{padding:46px 0 8px;scroll-margin-top:80px}
+.section-head{display:flex;align-items:end;justify-content:space-between;gap:24px;margin-bottom:20px}
+.section-head h2{font-size:31px;letter-spacing:-.045em;margin:0}
+.section-head p{margin:0;color:var(--muted);max-width:690px;text-align:right}
+.grid{display:grid;gap:18px}
+.kpis{grid-template-columns:repeat(4,1fr)}
+.card{background:var(--paper);border:1px solid var(--line);border-radius:20px;padding:24px;box-shadow:0 8px 24px rgba(43,39,32,.035)}
+.kpi{min-height:166px;position:relative;overflow:hidden}
+.kpi:after{content:"";position:absolute;width:85px;height:85px;border-radius:50%;right:-22px;bottom:-29px;background:var(--tone,var(--pale-green))}
+.kpi .label{font-size:13px;color:var(--muted);font-weight:800}
+.kpi .value{font-size:34px;font-weight:900;letter-spacing:-.05em;margin:18px 0 4px}
+.kpi .sub{font-size:12px;color:var(--muted)}
+.kpi.green{--tone:var(--pale-green)}.kpi.orange{--tone:var(--pale-orange)}.kpi.blue{--tone:var(--pale-blue)}
+.two{grid-template-columns:1fr 1fr}
+.chart-card{min-height:425px}
+.card-title{display:flex;justify-content:space-between;align-items:start;gap:16px;margin-bottom:18px}
+.card-title h3{margin:0;font-size:20px;letter-spacing:-.035em}
+.card-title span{font-size:12px;color:var(--muted)}
+.donut-layout{display:grid;grid-template-columns:48% 52%;align-items:center;min-height:315px}
+.donut{
+ width:250px;aspect-ratio:1;border-radius:50%;margin:auto;position:relative;
+ background:conic-gradient(var(--green) 0 82.22%,var(--orange) 82.22% 97.83%,var(--blue) 97.83% 99.40%,var(--blue2) 99.40% 100%);
+ box-shadow:inset 0 0 0 1px rgba(0,0,0,.03)
+}
+.donut:after{content:"";position:absolute;inset:55px;border-radius:50%;background:var(--paper);box-shadow:0 0 0 1px var(--line)}
+.donut-center{position:absolute;inset:0;z-index:2;display:flex;flex-direction:column;justify-content:center;align-items:center;font-size:13px;color:var(--muted)}
+.donut-center b{font-size:28px;color:var(--ink);letter-spacing:-.04em}
+.legend{display:grid;gap:11px}
+.legend-row{display:grid;grid-template-columns:13px 1fr auto auto;gap:10px;align-items:center;padding-bottom:10px;border-bottom:1px solid var(--line);font-size:13px}
+.dot{width:11px;height:11px;border-radius:50%}.legend-row b{font-size:15px}.legend-row em{font-style:normal;color:var(--muted)}
+.hbars{display:flex;flex-direction:column;gap:17px;margin-top:30px}
+.hbar-row{display:grid;grid-template-columns:70px 1fr 62px;align-items:center;gap:12px;font-size:13px}
+.track{height:22px;background:#eeeae2;border-radius:11px;overflow:hidden}
+.fill{height:100%;width:0;border-radius:11px;background:linear-gradient(90deg,var(--green),var(--green2));transition:width 1s ease}
+.hbar-row strong{text-align:right}
+.callout{margin-top:27px;padding:17px 18px;border-radius:15px;background:var(--ink);color:#fff;display:flex;justify-content:space-between;align-items:center}
+.callout b{font-size:24px;color:var(--orange2)}
+.segmented{display:inline-flex;background:#ece8df;padding:4px;border-radius:22px}
+.segmented button{border:0;background:transparent;color:var(--muted);font-size:12px;font-weight:800;padding:7px 12px;border-radius:17px;cursor:pointer}
+.segmented button.active{background:#fff;color:var(--ink);box-shadow:0 2px 7px rgba(0,0,0,.08)}
+.priority-wrap{display:grid;grid-template-columns:1fr 1fr;gap:18px}
+.priority{min-height:385px}
+.priority.dark{background:var(--ink);color:#fff;border-color:var(--ink)}
+.priority.dark .muted{color:#c9c6bf}.priority.dark .track{background:#4b4945}
+.priority .rows{margin-top:27px;display:grid;gap:18px}
+.priority-row{display:grid;grid-template-columns:90px 1fr auto;gap:13px;align-items:center}
+.tag{padding:7px 10px;border-radius:20px;text-align:center;font-size:12px;font-weight:900;background:var(--pale-green);color:var(--green)}
+.priority.dark .tag{background:#3d3b38;color:#fff}
+.mini-track{height:10px;border-radius:5px;background:#e9e5dc;overflow:hidden}
+.mini-fill{height:100%;background:var(--orange2);border-radius:5px}
+.muted{color:var(--muted);font-size:13px}
+.insight-strip{display:grid;grid-template-columns:repeat(3,1fr);gap:13px;margin-top:18px}
+.insight{padding:18px;border:1px solid var(--line);border-radius:16px;background:var(--paper);font-size:13px}
+.insight b{display:block;font-size:15px;margin-bottom:5px}
+.roadmap{display:grid;grid-template-columns:repeat(4,1fr);gap:16px;position:relative}
+.stage{min-height:265px;padding:25px;border-radius:20px;border:1px solid transparent}
+.stage .num{font-size:12px;font-weight:900;letter-spacing:.1em}
+.stage h3{font-size:22px;margin:18px 0 3px}.stage .when{font-size:12px;color:var(--muted)}
+.stage p{font-size:13px;color:var(--muted);margin-top:24px}
+.stage:nth-child(1){background:var(--pale-green)}.stage:nth-child(2){background:var(--pale-orange)}
+.stage:nth-child(3){background:var(--pale-blue)}.stage:nth-child(4){background:#eeebe4}
+.pilots{display:grid;gap:12px}
+.pilot{display:grid;grid-template-columns:8px 2.1fr 2fr 2.4fr;gap:20px;align-items:center;background:var(--paper);border:1px solid var(--line);border-radius:16px;overflow:hidden;padding-right:22px}
+.pilot-color{height:100%;min-height:85px}.pilot h3{font-size:16px;margin:0}.pilot p{font-size:13px;color:var(--muted)}
+.place{font-size:12px;font-weight:900;text-align:center;padding:9px;border-radius:18px}
+.table-wrap{overflow:auto;border:1px solid var(--line);border-radius:18px;background:var(--paper)}
+table{width:100%;border-collapse:collapse;min-width:840px}
+th,td{text-align:left;padding:17px 18px;border-bottom:1px solid var(--line);font-size:13px}
+th{color:var(--muted);font-size:12px;background:#f2efe8}td:first-child{font-weight:900}
+tr:last-child td{border-bottom:0}
+.warning{margin-top:14px;padding:15px 18px;border-radius:14px;background:var(--pale-orange);color:#9d552f;font-size:13px;font-weight:800}
+.backlog{grid-template-columns:1.15fr .85fr}.backlog .card:first-child{background:var(--ink);color:#fff;border-color:var(--ink)}
+.checklist{display:grid;gap:12px;margin-top:19px}.check{display:flex;gap:12px;align-items:flex-start;font-size:14px}
+.check i{font-style:normal;flex:0 0 25px;height:25px;border-radius:50%;display:grid;place-items:center;background:var(--orange2);color:var(--ink);font-size:11px;font-weight:900}
+.backlog .card:last-child .check i{background:var(--pale-green);color:var(--green)}
+.footer{margin-top:58px;padding:32px;border-top:1px solid var(--line);color:var(--muted);font-size:12px;display:flex;justify-content:space-between;gap:20px}
+.reveal{opacity:0;transform:translateY(14px);transition:.6s ease}.reveal.on{opacity:1;transform:none}
+@media(max-width:1000px){
+ .hero{grid-template-columns:1fr;padding:40px}.hero-panel{max-width:600px}
+ .kpis,.roadmap{grid-template-columns:repeat(2,1fr)}.two,.priority-wrap,.backlog{grid-template-columns:1fr}
+ .section-head{align-items:start;flex-direction:column}.section-head p{text-align:left}
+ .pilot{grid-template-columns:8px 1.5fr 1.5fr}.pilot p{grid-column:2/4;margin-top:-8px}
+}
+@media(max-width:680px){
+ .shell{padding:0 16px 50px}.topbar{padding:12px 16px}.nav{display:none}
+ .hero{padding:30px 24px;border-radius:20px}.hero-panel{padding:23px}
+ .kpis,.roadmap,.insight-strip{grid-template-columns:1fr}.donut-layout{grid-template-columns:1fr;gap:24px}
+ .donut{width:220px}.pilot{grid-template-columns:7px 1fr;padding:0 15px 15px 0}
+ .pilot-color{grid-row:1/4}.pilot h3,.pilot .place,.pilot p{grid-column:2;margin:0}
+ .section{padding-top:35px}.footer{flex-direction:column}
+}
+@media print{
+ .topbar{display:none}.shell{max-width:none;padding:0}.hero,.card{box-shadow:none}.section{break-inside:avoid}
+ body{background:#fff}.reveal{opacity:1;transform:none}
+}
+</style>
+</head>
+<body>
+<header class="topbar">
+  <div class="brand"><span class="brand-mark"></span>서귀포시 복지 현황 대시보드</div>
+  <nav class="nav">
+    <a href="#summary">핵심 현황</a><a href="#profile">수급 유형</a><a href="#priority">지역 진단</a>
+    <a href="#roadmap">실행계획</a><a href="#kpi">성과지표</a>
+  </nav>
+</header>
+
+<main class="shell">
+<section class="hero reveal">
+  <div>
+    <span class="eyebrow">2024.04 PUBLIC WELFARE DATA</span>
+    <h1>서귀포시 읍면동별<br>기초생활보장 현황 진단</h1>
+    <p>수급자 <b>절대 규모</b>와 <b>조건부수급자 비중</b>을 함께 보고, 데이터 정비부터 시범사업 확대까지 단계적으로 연결한 인포그래픽 대시보드입니다.</p>
+    <div class="hero-meta"><span class="chip">2024년 4월 원본 기준</span><span class="chip">수급률 추가 산출 예정</span><span class="chip">2020~2023 가상 시계열 제외</span></div>
+  </div>
+  <aside class="hero-panel">
+    <small>DECISION PRINCIPLE</small>
+    <h2>정확한 진단 → 검증 가능한 실행 → 생활 안정 중심 성과</h2>
+    <ol><li>데이터와 업무량을 먼저 정비</li><li>지역별 여건과 접근성을 조사</li><li>작게 시범 운영하고 비교 평가</li><li>성과 기준을 충족한 사업만 확대</li></ol>
+  </aside>
+</section>
+
+<section class="section reveal" id="summary">
+ <div class="section-head"><h2>한눈에 보는 핵심 현황</h2><p>전체 규모, 지역 집중도, 자활·고용 지원 필요도를 동시에 확인합니다.</p></div>
+ <div class="grid kpis">
+  <article class="card kpi green"><div class="label">기초생활보장 수급가구</div><div class="value">7,197가구</div><div class="sub">가구당 수급권자 평균 1.42명</div></article>
+  <article class="card kpi"><div class="label">전체 수급권자</div><div class="value">10,237명</div><div class="sub">일반·조건부·특례·시설 포함</div></article>
+  <article class="card kpi orange"><div class="label">상위 5개 지역 집중도</div><div class="value">53.6%</div><div class="sub">5개 지역 합계 5,487명</div></article>
+  <article class="card kpi blue"><div class="label">재가 수급자 중 조건부 비중</div><div class="value">15.7%</div><div class="sub">자활·고용 지원 필요도 지표</div></article>
+ </div>
+ <div class="insight-strip">
+  <div class="insight"><b>규모 집중</b>동홍동·대정읍·성산읍·남원읍·대천동에 수급자가 집중됩니다.</div>
+  <div class="insight"><b>비중 차이</b>중앙동·대륜동·효돈동·정방동은 조건부수급자 비중이 높습니다.</div>
+  <div class="insight"><b>분리 관리</b>시설수급자 61명은 시설 소재지 효과를 고려해 지역 수요와 분리합니다.</div>
+ </div>
+</section>
+
+<section class="section reveal" id="profile">
+ <div class="section-head"><h2>수급 유형과 지역 집중도</h2><p>유형 구성은 지원 방식, 지역별 절대 규모는 상담·조사·사례관리 업무량을 보여줍니다.</p></div>
+ <div class="grid two">
+  <article class="card chart-card">
+   <div class="card-title"><div><h3>수급권자 유형 구성</h3><span>전체 10,237명</span></div></div>
+   <div class="donut-layout">
+    <div class="donut"><div class="donut-center"><b>10,237명</b>전체 수급권자</div></div>
+    <div class="legend">
+      <div class="legend-row"><i class="dot" style="background:var(--green)"></i><span>일반수급자</span><b>8,417명</b><em>82.2%</em></div>
+      <div class="legend-row"><i class="dot" style="background:var(--orange)"></i><span>조건부수급자</span><b>1,598명</b><em>15.6%</em></div>
+      <div class="legend-row"><i class="dot" style="background:var(--blue)"></i><span>특례수급자</span><b>161명</b><em>1.6%</em></div>
+      <div class="legend-row"><i class="dot" style="background:var(--blue2)"></i><span>시설수급자</span><b>61명</b><em>0.6%</em></div>
+    </div>
+   </div>
+  </article>
+  <article class="card chart-card">
+   <div class="card-title">
+    <div><h3>수급권자 규모 상위 5개 지역</h3><span>절대 규모 기준</span></div>
+    <div class="segmented"><button class="active" data-mode="count">인원</button><button data-mode="share">전체 비중</button></div>
+   </div>
+   <div class="hbars" id="regionBars"></div>
+   <div class="callout"><span>상위 5개 지역 합계</span><b id="barTotal">5,487명</b></div>
+  </article>
+ </div>
+</section>
+
+<section class="section reveal" id="priority">
+ <div class="section-head"><h2>규모와 비중을 함께 보는 우선순위</h2><p>절대 규모는 업무량을, 조건부 비중은 자활·고용 지원 필요도를 보여줍니다. 최종 우선순위에는 지역별 재가 수급률을 추가합니다.</p></div>
+ <div class="priority-wrap">
+  <article class="card priority">
+   <div class="card-title"><div><h3>수급자 규모가 큰 지역</h3><span>업무량·예산 총량 관점</span></div></div>
+   <div class="rows">
+    <div class="priority-row"><span class="tag">동홍동</span><div class="mini-track"><div class="mini-fill" style="width:100%;background:var(--green)"></div></div><b>1,518명</b></div>
+    <div class="priority-row"><span class="tag">대정읍</span><div class="mini-track"><div class="mini-fill" style="width:79.2%;background:var(--green2)"></div></div><b>1,203명</b></div>
+    <div class="priority-row"><span class="tag">성산읍</span><div class="mini-track"><div class="mini-fill" style="width:67.5%;background:var(--green2)"></div></div><b>1,024명</b></div>
+   </div>
+   <p class="muted" style="margin-top:34px">세 지역의 조건부 비중은 각각 15.5%, 13.3%, 10.6%로 시 평균 15.7% 이하입니다.</p>
+  </article>
+  <article class="card priority dark">
+   <div class="card-title"><div><h3>조건부 비중이 높은 지역</h3><span class="muted">자활·고용 지원 필요도 관점</span></div></div>
+   <div class="rows">
+    <div class="priority-row"><span class="tag">중앙동</span><div class="mini-track"><div class="mini-fill" style="width:95.9%"></div></div><b>21.1%</b></div>
+    <div class="priority-row"><span class="tag">대륜동</span><div class="mini-track"><div class="mini-fill" style="width:95%"></div></div><b>20.9%</b></div>
+    <div class="priority-row"><span class="tag">효돈동</span><div class="mini-track"><div class="mini-fill" style="width:90.9%"></div></div><b>20.0%</b></div>
+    <div class="priority-row"><span class="tag">정방동</span><div class="mini-track"><div class="mini-fill" style="width:89.5%"></div></div><b>19.7%</b></div>
+   </div>
+   <p class="muted" style="margin-top:25px">건강·돌봄·직무 역량·교통 여건을 개인별로 평가한 뒤 지원 방식을 결정합니다.</p>
+  </article>
+ </div>
+</section>
+
+<section class="section reveal" id="roadmap">
+ <div class="section-head"><h2>4단계 실행 로드맵</h2><p>각 단계의 완료 기준과 다음 단계 진입 조건을 두어 대규모 확대에 앞서 효과를 검증합니다.</p></div>
+ <div class="roadmap">
+  <article class="stage"><span class="num">STAGE 01</span><h3>즉시 정비</h3><span class="when">0~6개월</span><p>데이터 품질·수급률·업무량을 확인하고 시설수급자를 분리 관리합니다.</p></article>
+  <article class="stage"><span class="num">STAGE 02</span><h3>조사·평가</h3><span class="when">6~18개월</span><p>자활 성과, 개인별 여건, 접근성, 지역 고용 구조를 조사합니다.</p></article>
+  <article class="stage"><span class="num">STAGE 03</span><h3>시범사업</h3><span class="when">2년차</span><p>유형별 1~2곳에서 1년 이상 운영하고 비교 지역과 함께 평가합니다.</p></article>
+  <article class="stage"><span class="num">STAGE 04</span><h3>확대·조정</h3><span class="when">3년차 이후</span><p>성과 기준 충족 사업만 확대하고 미달 사업은 개선하거나 종료합니다.</p></article>
+ </div>
+</section>
+
+<section class="section reveal">
+ <div class="section-head"><h2>2년차 시범사업 포트폴리오</h2><p>후보 지역은 재가 수급률과 2단계 조사 결과를 반영해 최종 확정합니다.</p></div>
+ <div class="pilots">
+  <article class="pilot"><i class="pilot-color" style="background:var(--green)"></i><h3>공동 자활·고용 상담창구</h3><span class="place" style="background:var(--pale-green);color:var(--green)">중앙동 + 정방동 + 송산동</span><p>인접 구도심이면서 조건부 비중이 높은 지역을 연계합니다.</p></article>
+  <article class="pilot"><i class="pilot-color" style="background:var(--orange)"></i><h3>자활 연계 강화</h3><span class="place" style="background:var(--pale-orange);color:var(--orange)">대륜동 또는 남원읍</span><p>절대 규모와 조건부 비중을 함께 고려합니다.</p></article>
+  <article class="pilot"><i class="pilot-color" style="background:var(--blue)"></i><h3>이동식 복지 상담</h3><span class="place" style="background:var(--pale-blue);color:var(--blue)">이동시간 최장 읍면 1곳</span><p>접근성 조사 결과에 따라 대상 지역을 선정합니다.</p></article>
+  <article class="pilot"><i class="pilot-color" style="background:var(--ink)"></i><h3>사례관리 인력 보강</h3><span class="place" style="background:#eeebe4;color:var(--ink)">동홍동</span><p>수급자 규모 1위 지역의 실제 업무량 확인 후 추진합니다.</p></article>
+ </div>
+ <div class="warning">진입 조건: 예산·재원·담당 인력·평가 방법·비교 지역이 확정되지 않으면 시범사업을 시작하지 않습니다.</div>
+</section>
+
+<section class="section reveal" id="kpi">
+ <div class="section-head"><h2>성과지표 대시보드</h2><p>‘탈수급’ 단독 목표를 피하고 고용 유지·소득 안정·재수급과 부작용을 함께 추적합니다.</p></div>
+ <div class="table-wrap">
+  <table>
+   <thead><tr><th>핵심 지표</th><th>측정 주기</th><th>기준선</th><th>함께 볼 부작용·보완 지표</th></tr></thead>
+   <tbody>
+    <tr><td>자활 참여율</td><td>분기</td><td>1~2단계 산출</td><td>중도 탈락률·참여 강제 민원</td></tr>
+    <tr><td>12개월 고용 유지율</td><td>연</td><td>2단계 평가</td><td>재수급률·탈수급 후 소득 변화</td></tr>
+    <tr><td>사례관리 업무량</td><td>반기</td><td>1~2단계 산출</td><td>상담 대기시간</td></tr>
+    <tr><td>위기가구 지원 연계</td><td>분기</td><td>1~2단계 산출</td><td>미지원 건수·오탐·낙인 민원</td></tr>
+    <tr><td>읍면 상담 접근성</td><td>연</td><td>1~2단계 산출</td><td>이동상담 1회당 비용</td></tr>
+   </tbody>
+  </table>
+ </div>
+ <div class="warning">탈수급률은 단독 목표로 사용하지 않습니다. 고용 유지율, 소득 변화, 재수급률을 반드시 함께 확인합니다.</div>
+</section>
+
+<section class="section reveal">
+ <div class="section-head"><h2>다음 의사결정을 위한 데이터</h2><p>필수 자료는 1~2단계 안에 확보하고, 선택 자료는 해당 사업 검토 시 수집합니다.</p></div>
+ <div class="grid backlog">
+  <article class="card"><h3>필수 확보 자료</h3><div class="checklist">
+   <div class="check"><i>01</i><span>읍면동별 주민등록인구·세대수·연령 구조</span></div>
+   <div class="check"><i>02</i><span>실제 2020~2024년 수급자 자료</span></div>
+   <div class="check"><i>03</i><span>기존 자활사업 성과 자료</span></div>
+   <div class="check"><i>04</i><span>사업별 비용·재원 구조</span></div>
+   <div class="check"><i>05</i><span>맞춤형복지팀 인력·사례 수</span></div>
+  </div></article>
+  <article class="card"><h3>사업 검토 시 선택 확보</h3><div class="checklist">
+   <div class="check"><i>+</i><span>교통·시설 거리·이동시간</span></div>
+   <div class="check"><i>+</i><span>지역 고용 구조</span></div>
+   <div class="check"><i>+</i><span>시설별 정원·입소 전 거주지</span></div>
+   <div class="check"><i>+</i><span>신규 사업 확대 시 중기 재정 전망</span></div>
+  </div></article>
+ </div>
+</section>
+
+<footer class="footer">
+ <span>자료 기준: 「서귀포시 기초생활보장 현황 진단 및 지원계획」 PPTX · 2024년 4월 공공데이터</span>
+ <span>※ 2020~2023년 교육용 가상 시계열은 추세 판단에서 제외</span>
+</footer>
+</main>
+
+<script>
+const regions=[
+ {name:"동홍동",count:1518,share:14.83},{name:"대정읍",count:1203,share:11.75},
+ {name:"성산읍",count:1024,share:10.00},{name:"남원읍",count:917,share:8.96},{name:"대천동",count:825,share:8.06}
+];
+const bars=document.getElementById("regionBars"), total=document.getElementById("barTotal");
+function renderBars(mode){
+ const max=Math.max(...regions.map(d=>d[mode]));
+ bars.innerHTML=regions.map(d=>`
+  <div class="hbar-row"><span>${d.name}</span><div class="track"><div class="fill" data-w="${d[mode]/max*100}"></div></div>
+  <strong>${mode==="count"?d.count.toLocaleString()+"명":d.share.toFixed(1)+"%"}</strong></div>`).join("");
+ total.textContent=mode==="count"?"5,487명":"53.6%";
+ requestAnimationFrame(()=>document.querySelectorAll(".fill").forEach(el=>el.style.width=el.dataset.w+"%"));
+}
+renderBars("count");
+document.querySelectorAll(".segmented button").forEach(btn=>btn.addEventListener("click",()=>{
+ document.querySelectorAll(".segmented button").forEach(b=>b.classList.remove("active"));btn.classList.add("active");renderBars(btn.dataset.mode);
+}));
+const obs=new IntersectionObserver(entries=>entries.forEach(e=>{if(e.isIntersecting)e.target.classList.add("on")}),{threshold:.08});
+document.querySelectorAll(".reveal").forEach(el=>obs.observe(el));
+</script>
+</body>
+</html>
